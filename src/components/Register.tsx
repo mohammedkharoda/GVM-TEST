@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+interface RegisterFormProps {
+    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 interface FormData {
     email: string;
@@ -8,17 +11,38 @@ interface FormData {
     name: string;
 }
 
-const RegisterForm = () => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ setIsLoggedIn }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState<FormData>({
         email: '',
         password: '',
-        name:''
+        name: ''
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        alert('Registered please login to continue!');
+        
+       
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            alert('Invalid email address');
+            return;
+        }
+
+        if (formData.name.trim() === '') {
+            alert('Name cannot be empty');
+            return;
+        }
+
+        const existingUser = localStorage.getItem(formData.email);
+        if (existingUser) {
+            alert('User already exists. Please log in.');
+            return;
+        }
+
+        localStorage.setItem(formData.email, JSON.stringify(formData)); 
+        setIsLoggedIn(true);
+        alert('Registered, please log in to continue!');
         navigate('/login');
     };
 
@@ -35,7 +59,7 @@ const RegisterForm = () => {
                 className="border border-gray-300 rounded-md px-3 py-2 mb-3 w-full max-w-md focus:outline-none focus:border-blue-500"
             />
             <input
-                type="name"
+                type="text"
                 value={formData.name}
                 onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -61,7 +85,6 @@ const RegisterForm = () => {
                 Register
             </button>
         </form>
-
     );
 };
 

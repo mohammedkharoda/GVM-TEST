@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const LoginForm = () => {
+interface LoginFormProps {
+    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ setIsLoggedIn }) => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        alert('Logged in successfully!');
-        navigate('/');
+
+        const userData = localStorage.getItem(email);
+
+        if (userData) {
+            const parsedUserData = JSON.parse(userData);
+            if (parsedUserData.password === password) {
+                setIsLoggedIn(true);
+                alert('Logged in successfully!');
+                navigate('/home');
+            } else {
+                alert('Incorrect password. Please try again.');
+            }
+        } else {
+            alert('User not found. Please register.');
+        }
     };
 
     return (
@@ -39,7 +56,6 @@ const LoginForm = () => {
                 </button>
             </form>
         </div>
-
     );
 };
 
