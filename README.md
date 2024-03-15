@@ -19,5 +19,5 @@
 
 --- 
 ### Routes to Explore [for login and resigter pages]
--- localhost:5173/register
--- localhost:5173/login
+- localhost:5173/register
+- localhost:5173/login
